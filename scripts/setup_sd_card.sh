@@ -18,6 +18,7 @@ fi
 BOOT_LABEL="BOOT"
 CONFIG_LABEL="CONFIG"
 ROOT_LABEL="ROOTFS"
+FPGABIT_LABEL="BITSTREAMS"
 
 # Ensure device is not mounted
 echo "Unmounting $DEVICE..."
@@ -37,10 +38,14 @@ sudo parted -s "$DEVICE" mkpart primary ext4 64MB 192MB
 # Create CONFIG partition (64MB)
 sudo parted -s "$DEVICE" mkpart primary fat32 192MB 256MB
 
+# And the bitstream partition
+sudo parted -s "$DEVICE" mkpart primary fat32 256MB 1024MB
+
 # Get partition names
 BOOT_PART="${DEVICE}p1"
 ROOT_PART="${DEVICE}p2"
 CONFIG_PART="${DEVICE}p3"
+BIT_PART="${DEVICE}p4"
 
 # Wait for the kernel to detect new partitions
 sleep 2
@@ -51,6 +56,9 @@ sudo mkfs.vfat -F 32 -n "$BOOT_LABEL" "$BOOT_PART"
 
 echo "Formatting CONFIG partition..."
 sudo mkfs.vfat -F 32 -n "$CONFIG_LABEL" "$CONFIG_PART"
+
+echo "Formatting BITSTREAM partition..."
+sudo mkfs.vfat -F 32 -n "$BITSTREAM_LABEL" "$BIT_PART"
 
 echo "Formatting ROOT partition using create_ext4_from_config.sh..."
 sudo mkfs.ext4 -L "$ROOT_LABEL" -O ^metadata_csum,^64bit "$ROOT_PART"
