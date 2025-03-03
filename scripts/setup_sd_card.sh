@@ -33,7 +33,7 @@ sudo parted -a optimal -s "$DEVICE" mkpart primary fat32 0% 64MB
 sudo parted -s "$DEVICE" set 1 boot on
 
 # Create ROOT partition (middle partition)
-sudo parted -s "$DEVICE" mkpart primary ext2 64MB 192MB
+sudo parted -s "$DEVICE" mkpart primary ext4 64MB 192MB
 
 # Create CONFIG partition (64MB)
 sudo parted -s "$DEVICE" mkpart primary fat32 192MB 256MB
@@ -61,7 +61,7 @@ echo "Formatting BITSTREAM partition..."
 sudo mkfs.vfat -F 32 -n "$FPGABIT_LABEL" "$BIT_PART"
 
 echo "Formatting ROOT partition using create_ext4_from_config.sh..."
-sudo mkfs.ext2 -L "$ROOT_LABEL" "$ROOT_PART"
+sudo ./legacy_tools/mkfs.ext4 -L "$ROOT_LABEL" "$ROOT_PART"
 
 # Mount partitions
 BOOT_MOUNT=$(mktemp -d)
@@ -76,6 +76,7 @@ sudo mount "$BIT_PART"  "$FPGA_MOUNT"
 echo "Copying bootloader files to BOOT partition..."
 sudo cp u-boot-antminer-beaglebone/MLO u-boot-antminer-beaglebone/u-boot.img "$BOOT_MOUNT"
 sudo cp -r fat/* "$BOOT_MOUNT"
+sync
 
 # Copy root filesystem
 echo "Copying root filesystem to ROOT partition..."
