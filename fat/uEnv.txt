@@ -1,0 +1,10 @@
+dtb=am335x-boneblack-blackmainer.dtb
+console=ttyO0,115200n8
+enable_uboot_overlays=1
+disable_uboot_overlay_video=1
+disable_uboot_overlay_audio=1
+disable_uboot_overlay_wireless=1
+enable_uboot_cape_universal=1
+uboot_fdt_buffer=0x60000
+cmdline=coherent_pool=1M net.ifnames=0 cape_universal=enable
+
