@@ -75,14 +75,14 @@ sudo mount "$BIT_PART"  "$FPGA_MOUNT"
 # Copy bootloader files
 echo "Copying bootloader files to BOOT partition..."
 sudo cp u-boot-antminer-beaglebone/MLO u-boot-antminer-beaglebone/u-boot.img "$BOOT_MOUNT"
-sudo cp -a fat/* "$BOOT_MOUNT"
+sudo cp -r fat/* "$BOOT_MOUNT"
 
 # Copy root filesystem
 echo "Copying root filesystem to ROOT partition..."
 sudo cp -a fs/* "$ROOT_MOUNT"
 
 # Copy bitstreams
-sudo cp -a bitstreams/* "$FPGA_MOUNT"
+sudo cp -r bitstreams/* "$FPGA_MOUNT"
 
 # Sync and unmount
 echo "Syncing files..."
