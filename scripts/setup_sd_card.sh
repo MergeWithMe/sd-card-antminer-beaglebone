@@ -58,7 +58,7 @@ echo "Formatting CONFIG partition..."
 sudo mkfs.vfat -F 32 -n "$CONFIG_LABEL" "$CONFIG_PART"
 
 echo "Formatting BITSTREAM partition..."
-sudo mkfs.vfat -F 32 -n "$BITSTREAM_LABEL" "$BIT_PART"
+sudo mkfs.vfat -F 32 -n "$FPGABIT_LABEL" "$BIT_PART"
 
 echo "Formatting ROOT partition using create_ext4_from_config.sh..."
 sudo mkfs.ext4 -L "$ROOT_LABEL" -O ^metadata_csum,^64bit "$ROOT_PART"
