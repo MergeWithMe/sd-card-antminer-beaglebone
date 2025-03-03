@@ -66,24 +66,30 @@ sudo mkfs.ext4 -L "$ROOT_LABEL" -O ^metadata_csum,^64bit "$ROOT_PART"
 # Mount partitions
 BOOT_MOUNT=$(mktemp -d)
 ROOT_MOUNT=$(mktemp -d)
+FPGA_MOUNT=$(mktemp -d)
 
 sudo mount "$BOOT_PART" "$BOOT_MOUNT"
 sudo mount "$ROOT_PART" "$ROOT_MOUNT"
+sudo mount "$BIT_PART"  "$FPGA_MOUNT"
 
 # Copy bootloader files
 echo "Copying bootloader files to BOOT partition..."
 sudo cp u-boot-antminer-beaglebone/MLO u-boot-antminer-beaglebone/u-boot.img "$BOOT_MOUNT"
-sudo cp -r fat/* "$BOOT_MOUNT"
+sudo cp -a fat/* "$BOOT_MOUNT"
 
 # Copy root filesystem
 echo "Copying root filesystem to ROOT partition..."
 sudo cp -a fs/* "$ROOT_MOUNT"
+
+# Copy bitstreams
+sudo cp -a bitstreams/* "$FPGA_MOUNT"
 
 # Sync and unmount
 echo "Syncing files..."
 sync
 sudo umount "$BOOT_MOUNT"
 sudo umount "$ROOT_MOUNT"
+sudo umount "$FPGA_MOUNT"
 
 # Cleanup
 rmdir "$BOOT_MOUNT" "$ROOT_MOUNT"
