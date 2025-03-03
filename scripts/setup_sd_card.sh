@@ -67,10 +67,12 @@ sudo ./legacy_tools/mkfs.ext4 -L "$ROOT_LABEL" "$ROOT_PART"
 BOOT_MOUNT=$(mktemp -d)
 ROOT_MOUNT=$(mktemp -d)
 FPGA_MOUNT=$(mktemp -d)
+CONFIG_MOUNT=$(mktemp -d)
 
 sudo mount "$BOOT_PART" "$BOOT_MOUNT"
 sudo mount "$ROOT_PART" "$ROOT_MOUNT"
 sudo mount "$BIT_PART"  "$FPGA_MOUNT"
+sudo mount "$CONFIG_PART"  "$CONFIG_MOUNT"
 
 # Copy bootloader files
 echo "Copying bootloader files to BOOT partition..."
@@ -82,6 +84,10 @@ sync
 echo "Copying root filesystem to ROOT partition..."
 sudo cp -a fs/* "$ROOT_MOUNT"
 
+# Copy root filesystem
+echo "Copying config files..."
+sudo cp -r configs/* "$CONFIG_MOUNT"
+
 # Copy bitstreams
 sudo cp -r bitstreams/* "$FPGA_MOUNT"
 
@@ -91,8 +97,9 @@ sync
 sudo umount "$BOOT_MOUNT"
 sudo umount "$ROOT_MOUNT"
 sudo umount "$FPGA_MOUNT"
+sudo umount "$CONFIG_MOUNT"
 
 # Cleanup
-rmdir "$BOOT_MOUNT" "$ROOT_MOUNT"
+rmdir "$BOOT_MOUNT" "$ROOT_MOUNT" "$FPGA_MOUNT" "$CONFIG_MOUNT"
 
 echo "SD card setup complete!"
