@@ -1,3 +1,3 @@
-[submodule "sd-card-antminer-beaglebone"]
-	path = sd-card-antminer-beaglebone
-	url = git@github.com:MergeWithMe/sd-card-antminer-beaglebone.git
+[submodule "u-boot-antminer-beaglebone"]
+	path = u-boot-antminer-beaglebone
+	url = git@github.com:MergeWithMe/u-boot-antminer-beaglebone.git
