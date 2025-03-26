@@ -5,3 +5,5 @@ out/fpga.ext4
 out/initramfs.bin.SD
 out/initramfs.cpio.gz
 out/nand.img
+
+/out/nand.img
