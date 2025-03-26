@@ -5,15 +5,3 @@ out/fpga.ext4
 out/initramfs.bin.SD
 out/initramfs.cpio.gz
 out/nand.img
-
-/out/nand.img
-
-/out/initramfs.cpio.gz
-
-/out/initramfs.bin.SD
-
-/out/fpga.ext4
-
-/out/config.ext4
-
-/out/bootenv.bin
