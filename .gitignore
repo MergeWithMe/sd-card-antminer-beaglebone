@@ -9,3 +9,5 @@ out/nand.img
 /out/nand.img
 
 /out/initramfs.cpio.gz
+
+/out/initramfs.bin.SD
