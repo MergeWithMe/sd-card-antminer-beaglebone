@@ -11,3 +11,5 @@ out/nand.img
 /out/initramfs.cpio.gz
 
 /out/initramfs.bin.SD
+
+/out/fpga.ext4
