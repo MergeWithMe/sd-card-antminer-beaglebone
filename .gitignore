@@ -15,3 +15,5 @@ out/nand.img
 /out/fpga.ext4
 
 /out/config.ext4
+
+/out/bootenv.bin
