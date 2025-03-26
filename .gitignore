@@ -13,3 +13,5 @@ out/nand.img
 /out/initramfs.bin.SD
 
 /out/fpga.ext4
+
+/out/config.ext4
