@@ -1,0 +1,17 @@
+# Set MTD partitioning (for reference, partitions remain the same)
+mtdparts=mtdparts=nand0:256k(spl),256k(spl_backup1),256k(spl_backup2),256k(spl_backup3),2M(u-boot),128k(bootenv),128k(fdt),5M(kernel),20M(root),20M(config),50M(fpgabit)
+
+# Set boot arguments to use initramfs for root and no root partition mounted
+bootargs=console=ttyO0,115200 root=/dev/ram0 rw init=/init
+
+# Load the kernel image from NAND partition "kernel"
+load_kernel=mmc read $kernel_addr_r 0x280000 0x500000
+
+# Load the device tree from NAND partition "fdt"
+load_fdt=mmc read $fdt_addr_r 0x260000 0x20000
+
+# Load the initramfs from NAND partition "root"
+load_initramfs=mmc read $initramfs_addr_r 0x800000 0x1400000
+
+# Boot the kernel with initramfs, device tree, and boot arguments
+bootcmd=run load_kernel; run load_fdt; run load_initramfs; bootz $kernel_addr_r $initramfs_addr_r $fdt_addr_r

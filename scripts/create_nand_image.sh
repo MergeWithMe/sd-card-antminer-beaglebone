@@ -1,16 +1,6 @@
 #!/bin/bash
 
-# Output NAND image file
-NAND_IMAGE="./out/nand.img"
-
-# NAND total size (adjust as needed)
-NAND_TOTAL_SIZE=$((0x8000000))  # 128MB
-
-# Create empty NAND image
-echo "Creating NAND image of size $NAND_TOTAL_SIZE bytes..."
-dd if=/dev/zero of=$NAND_IMAGE count=1 bs=$NAND_TOTAL_SIZE
-
-# Define partitions (offset, size)
+# Not really uses all fields: Define partitions (offset, size)
 PARTITIONS=(
     "spl 0x000000 0x20000 ./u-boot-antminer-beaglebone/MLO"
     "spl_backup1 0x20000 0x20000 ./u-boot-antminer-beaglebone/MLO"
@@ -19,7 +9,7 @@ PARTITIONS=(
     "u-boot 0x80000 0x1c0000 ./u-boot-antminer-beaglebone/u-boot.img"
     "bootenv 0x240000 0x20000 ./out/bootenv.bin"
     "fdt 0x260000 0x20000 ./fat/extlinux/am335x-boneblack-blackmainer.dtb"
-    "kernel 0x280000 0x500000 ./fat/zImage"
+    "kernel 0x280000 0x500000 ./out/uImage.bin"
     "root 0x800000 0x1400000 ./out/initramfs.bin.SD"
     "config 0x1c00000 0x1400000 ./out/config.ext4"
     "fpgabit 0x3000000 0x5000000 ./out/fpga.ext4"
@@ -73,8 +63,10 @@ rmdir mnt_config
 echo "Creating bootenv.bin image ..."
 mkenvimage -s 0x20000 -o ./out/bootenv.bin ./bootenv/bootenv.txt
 
-echo "Writing partition image ..."
-# Create partitions
+echo "Packing kernel ..."
+mkimage -A arm -O linux -T kernel -C none -a 0x82000000 -e 0x82000000 -n "Linux Kernel" -d fat/zImage out/uImage.bin
+
+# copy files to tftpboot
 for entry in "${PARTITIONS[@]}"; do
     set -- $entry
     NAME=$1
@@ -82,8 +74,7 @@ for entry in "${PARTITIONS[@]}"; do
     SIZE=$(($3))
     FILENAME=$4
 
-    echo "Creating partition '$NAME' at offset $OFFSET with size $SIZE and file $FILENAME ..."
-    dd if=$FILENAME bs=512 seek=$((OFFSET / 512)) of=$NAND_IMAGE count=$((SIZE / 512)) conv=notrunc
+    cp $FILENAME tftpboot/
 done
 
 
