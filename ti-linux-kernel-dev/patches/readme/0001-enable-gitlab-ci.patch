@@ -1,0 +1,120 @@
+From 80b43752371fa8538494e770fb749423caae399f Mon Sep 17 00:00:00 2001
+From: Robert Nelson <robertcnelson@gmail.com>
+Date: Thu, 5 Sep 2024 11:56:01 -0500
+Subject: [PATCH] enable: gitlab-ci
+
+Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+---
+ .github/FUNDING.yml                  | 12 ++++++++
+ .github/ISSUE_TEMPLATE/bug_report.md | 20 ++++++++++++++
+ .gitlab-ci.yml                       | 41 ++++++++++++++++++++++++++++
+ README.md                            |  3 ++
+ 4 files changed, 76 insertions(+)
+ create mode 100644 .github/FUNDING.yml
+ create mode 100644 .github/ISSUE_TEMPLATE/bug_report.md
+ create mode 100644 .gitlab-ci.yml
+ create mode 100644 README.md
+
+diff --git a/.github/FUNDING.yml b/.github/FUNDING.yml
+new file mode 100644
+index 000000000000..8b20af1e3599
+--- /dev/null
++++ b/.github/FUNDING.yml
+@@ -0,0 +1,12 @@
++# These are supported funding model platforms
++
++github: beagleboard # Replace with up to 4 GitHub Sponsors-enabled usernames e.g., [user1, user2]
++patreon: beagleboard # Replace with a single Patreon username
++open_collective: # Replace with a single Open Collective username
++ko_fi: # Replace with a single Ko-fi username
++tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
++community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
++liberapay: # Replace with a single Liberapay username
++issuehunt: # Replace with a single IssueHunt username
++otechie: # Replace with a single Otechie username
++custom: https://paypal.me/beagleboard # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
+diff --git a/.github/ISSUE_TEMPLATE/bug_report.md b/.github/ISSUE_TEMPLATE/bug_report.md
+new file mode 100644
+index 000000000000..0eee1cd1c54a
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/bug_report.md
+@@ -0,0 +1,20 @@
++---
++name: Bug report
++about: Create a report to help us improve
++title: ''
++labels: ''
++assignees: ''
++
++---
++
++**Describe the bug**
++A clear and concise description of what the bug is.
++
++**Describe how to reproduce the bug**
++List all the steps needed to reproduce the bug
++
++**REQUIRED INFORMATION**
++Run this command and paste the output here:
++```
++sudo beagle-version
++```
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+new file mode 100644
+index 000000000000..4d61245a2fb7
+--- /dev/null
++++ b/.gitlab-ci.yml
+@@ -0,0 +1,41 @@
++image: robertcnelson/beagle-devscripts-kernel-debian-12-amd64:latest
++# https://openbeagle.org/beagleboard/ci-docker-images
++
++before_script:
++  - export PATH=/usr/lib/ccache:$PATH
++  - echo "Acquire::http::Proxy \"http://192.168.1.10:3142\";" > /etc/apt/apt.conf.d/00aptproxy
++  - apt-get update
++  - apt-get upgrade -yq
++  - cd /opt/linux-src/ ; git pull ; cd -
++
++cache:
++  key: "$CI_PROJECT_NAME-ti-linux-arm32-5.4.y"
++  paths:
++    - ccache.tar.lz4
++
++build:
++  tags:
++    - docker-amd64
++  stage: build
++  script:
++    - mkdir -p /root/.cache/ccache/ || true
++    - tar --use-compress-program=lz4 -xf ccache.tar.lz4 -C / || true
++    - ccache -z
++    - CORES=$(getconf _NPROCESSORS_ONLN)
++    - make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- clean
++    - make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bb.org_defconfig
++    - echo "make -j${CORES} ARCH=arm KBUILD_DEBARCH=armhf CROSS_COMPILE=arm-linux-gnueabihf- LOCALVERSION=-ti-arm32-r$CI_JOB_ID KDEB_SOURCENAME=linux-upstream KDEB_COMPRESS=xz bindeb-pkg"
++    - make -j${CORES} ARCH=arm KBUILD_DEBARCH=armhf KDEB_PKGVERSION=1xross CROSS_COMPILE=arm-linux-gnueabihf- LOCALVERSION=-ti-arm32-r$CI_JOB_ID KDEB_SOURCENAME=linux-upstream KDEB_COMPRESS=xz bindeb-pkg
++    - mv ../*.deb ./
++    - ccache -sv
++    - tar --use-compress-program=lz4 -cf ccache.tar.lz4 /root/.cache/ccache/
++  rules:
++    - if: $CI_COMMIT_TAG
++      when: never
++    - when: always
++  artifacts:
++    expire_in: 28 days
++    when: on_success
++    name: "$CI_PROJECT_NAME-ti-linux-arm32-5.4.y-$CI_JOB_ID"
++    paths:
++      - "linux-image-*.deb"
+diff --git a/README.md b/README.md
+new file mode 100644
+index 000000000000..9376b7b0424b
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,3 @@
++# Gitlab CI
++
++Job Status: https://openbeagle.org/beagleboard/linux/-/jobs
+-- 
+2.39.2
+
