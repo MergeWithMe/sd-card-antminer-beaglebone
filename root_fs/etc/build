@@ -1,0 +1,13 @@
+-----------------------
+Build Configuration:  |
+-----------------------
+DISTRO = poky
+DISTRO_VERSION = 4.0.25
+IMAGE_BASENAME = core-image-minimal
+IMAGE_NAME = core-image-minimal-beaglebone-yocto-20250215144903
+-----------------------
+Layer Revisions:      |
+-----------------------
+meta              = kirkstone:b5aa03f336c121269551f9e7baed4c677c76bb39 
+meta-poky         = kirkstone:b5aa03f336c121269551f9e7baed4c677c76bb39 
+meta-yocto-bsp    = kirkstone:b5aa03f336c121269551f9e7baed4c677c76bb39 
