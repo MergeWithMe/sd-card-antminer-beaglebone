@@ -243,7 +243,7 @@ fi
 cp deploy/5.4.106-ti-r42.1.zImage ../tftpboot/zImage
 mkimage -A arm -O linux -T kernel -C none -a 0x82000000 -e 0x82000000 -n "Linux Kernel" -d deploy/5.4.106-ti-r42.1.zImage ../tftpboot/uImage
 tar -xzf deploy/5.4.106-ti-r42.1-dtbs.tar.gz -C ../tftpboot ./am335x-boneblack.dtb --strip-components=1
-
+tar -xzf deploy/5.4.106-ti-r42.1-modules.tar.gz -C ../modules_fs
 echo "-----------------------------"
 echo "Script Complete"
 echo "${KERNEL_UTS}" > kernel_version
