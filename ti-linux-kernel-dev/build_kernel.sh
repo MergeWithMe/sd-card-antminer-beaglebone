@@ -239,6 +239,10 @@ if [ ! "${AUTO_BUILD_DONT_PKG}" ] ; then
 	make_modules_pkg
 	make_dtbs_pkg
 fi
+
+cp deploy/5.4.106-ti-r42.1.zImage ../tftpboot/zImage
+mkimage -A arm -O linux -T kernel -C none -a 0x82000000 -e 0x82000000 -n "Linux Kernel" -d deploy/5.4.106-ti-r42.1.zImage ../tftpboot/uImage
+
 echo "-----------------------------"
 echo "Script Complete"
 echo "${KERNEL_UTS}" > kernel_version
